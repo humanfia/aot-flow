@@ -49,7 +49,9 @@ def said(findings: list[Finding]) -> str:
 async def checked(
     files: dict[str, bytes], name: str, seconds: float, shown: str = ""
 ) -> Checked:
-    holding = Path(await asyncio.to_thread(tempfile.mkdtemp, prefix=".aot."))
+    # Resolved, as the engine names the files it imports: a temporary directory behind a
+    # symlink -- macOS's /var -- is otherwise a path no message it gives back contains.
+    holding = Path(await asyncio.to_thread(tempfile.mkdtemp, prefix=".aot.")).resolve()
     try:
         draft = holding / name
         await asyncio.to_thread(_written, draft, files)

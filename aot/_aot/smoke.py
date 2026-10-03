@@ -115,18 +115,14 @@ def _at(error: BaseException, draft: Path) -> str:
     cause = error.__cause__ or error
     if isinstance(cause, SyntaxError) and cause.filename:
         return f" (at {Path(cause.filename).name}:{cause.lineno})"
-    # Resolved both sides: the engine imports a flow by its real path, and a draft under
-    # a symlinked temporary directory -- macOS's /var -- is not one.
-    root = draft.resolve()
     inside = [
         frame
         for frame in traceback.extract_tb(cause.__traceback__)
-        if Path(frame.filename).resolve().is_relative_to(root)
+        if Path(frame.filename).is_relative_to(draft)
     ]
     if not inside:
         return ""
-    where = Path(inside[-1].filename).resolve().relative_to(root)
-    return f" (at {where}:{inside[-1].lineno})"
+    return f" (at {Path(inside[-1].filename).relative_to(draft)}:{inside[-1].lineno})"
 
 
 def _guarded() -> None:
