@@ -78,6 +78,12 @@ A refusal at any step goes back to the writer word for word, for up to `repairs`
 Both agents carry the flow's own [skill](https://docs.humanfia.ai/humanize/user/skills),
 `writing-flows`: how a flow is written against hmz. Any backend can fill either role.
 
+A critic whose CLI fences its own reads in a sandbox needs a host that can build that sandbox.
+Codex's bubblewrap sandbox cannot start where unprivileged user namespaces are restricted:
+Ubuntu 24.04 does this by default, with `kernel.apparmor_restrict_unprivileged_userns = 1`.
+A `codex/…` critic on such a host can read no draft. Give the critic to another backend there,
+or run aot on a host that allows the sandbox.
+
 | Param | Default | |
 | --- | --- | --- |
 | `name` | blank | What to call the new flow. Blank takes the name the spec gives it. |
