@@ -13,7 +13,7 @@ flow talks to them. A seat's `mixins` names only the agent capabilities that rol
 uses: each one narrows which harnesses can fill it.
 - `endings` must hold at least one. A `verdict` ending never stands alone: it travels with \
 a round cap, because an agent may never say the verdict. The budget a run is given with \
-`-b` stops any flow, but it is the runner's, not an ending the flow implements.
+`-p budget.<limit>=` stops any flow, but it is the runner's, not an ending the flow implements.
 - `name` is snake_case, short, and says what the flow does.
 
 The briefing:

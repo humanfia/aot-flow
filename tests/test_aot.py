@@ -83,7 +83,7 @@ GOOD = {
     """Pair loop -- an actor works until a fresh reviewer says the task is done.
 
         hmz exec -f local/pair_loop -a actor=claude/claude-opus-5:high \\
-            -a reviewer=codex/gpt-5.6-sol:high -b cost=10 "the task"
+            -a reviewer=codex/gpt-5.6-sol:high -p budget.cost=10 "the task"
     """
 
     import asyncio
@@ -404,7 +404,7 @@ async def test_a_good_draft_lands_whole(capsys: pytest.CaptureFixture[str]) -> N
     assert "compiled: pair_loop" in out
     assert (
         "hmz exec -f local/pair_loop -a actor=CLI/MODEL:EFFORT "
-        "-a reviewer=CLI/MODEL:EFFORT -b cost=USD" in out
+        "-a reviewer=CLI/MODEL:EFFORT -p budget.cost=USD" in out
     )
     assert "ends:     by verdict" in out
 
