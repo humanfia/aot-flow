@@ -1,14 +1,14 @@
 """AOT -- the flow that writes a flow: a description in, a loaded, smoke-run and reviewed flow out.
 
     hmz exec -f aot -a writer=claude/claude-opus-5:high -a critic=codex/gpt-5.6-sol:high \
-        -b cost=10 "two agents take turns until a reviewer says it is done"
+        -p budget.cost=10 "two agents take turns until a reviewer says it is done"
 
 The writer draws a spec from the description, then drafts the flow in a scratch directory.
 Each draft is loaded through humanize's engine and run on fakes in three worlds -- an agent
 that never says done, one that says done at once, one that answers nothing -- and must end on
 its own in every one; a critic then reads it fresh. A refusal goes back to the writer word
-for word, for up to `repairs` rounds. What passes lands whole in `.humanize/flows` (or
-`~/.humanize/flows` with `-p into=user`), never over a flow that is already there.
+for word, for up to `repairs` rounds. What passes lands whole in `.hmz/flows` (or
+`~/.hmz/flows` with `-p into=user`), never over a flow that is already there.
 """
 
 import keyword
@@ -73,7 +73,7 @@ class Params(FlowParams):
     )
     into: Literal["local", "user"] = Field(
         default="local",
-        description="where it lands: `local` is this project's .humanize/flows, `user` "
+        description="where it lands: `local` is this project's .hmz/flows, `user` "
         "the one in your home directory",
     )
     repairs: int = Field(
@@ -525,4 +525,4 @@ def _reported(
         else [seat.name for seat in spec.seats if not seat.person]
     )
     line = " ".join(f"-a {role}=CLI/MODEL:EFFORT" for role in roles)
-    print(f'\nhmz exec -f {params.into}/{name} {line} -b cost=USD "the task"')
+    print(f'\nhmz exec -f {params.into}/{name} {line} -p budget.cost=USD "the task"')

@@ -39,7 +39,7 @@ module of humanize's own -- those move, and a flow is somebody else's repository
 """Pair loop -- an actor works until a fresh reviewer says the task is done.
 
     hmz exec -f local/pair_loop -a actor=claude/claude-opus-5:high \
-        -a reviewer=codex/gpt-5.6-sol:high -b cost=10 "the task"
+        -a reviewer=codex/gpt-5.6-sol:high -p budget.cost=10 "the task"
 
 The actor works in one session that remembers; a reviewer reads the repository fresh each
 round. The reviewer saying done ends it, and the round cap backstops one that never does.
@@ -166,7 +166,7 @@ class Workspace(LocalEnv, ShellEnvMixin, FilesEnvMixin):  # `exec([...])`, `read
 
 ## Every loop has its own bound
 
-The budget a run is given -- `-b cost=10`, or what a calling flow passes -- is the runner's.
+The budget a run is given -- `-p budget.cost=10`, or what a calling flow passes -- is the runner's.
 When it is spent, the next turn raises `BudgetExceeded` and the run ends there. It is a
 backstop, not a loop condition: never declare one in the flow, and never write a loop that
 only the budget can end. The compiler runs every draft under a budget of its own, and a

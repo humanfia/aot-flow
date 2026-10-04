@@ -1,6 +1,6 @@
 [project]
 name = "flow-aot"
-version = "0.1.0"
+version = "0.1.1"
 description = "AOT for hmz: the flow that writes a flow - a description in, a loaded, smoke-run and reviewed flow out."
 readme = "README.md"
 requires-python = ">=3.12"

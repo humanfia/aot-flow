@@ -18,14 +18,13 @@ all three lands among this project's own flows, the `local` flowverse.
 
 ## Install
 
-You need [hmz](https://github.com/humanfia/humanize). In hmz, open `/flows`, go to
-**Flowverses → official → aot**, pick a version and install it.
+You need [hmz](https://github.com/humanfia/humanize). In hmz, open `/flow`, go to
+**Flowverses → official → aot** and **Install** it.
 
-To run it from a clone instead, point `-f` at the flow's directory:
+To run a release without installing it, name it by its git ref:
 
 ```sh
-git clone --branch v0.1.0 https://github.com/humanfia/flow-aot
-hmz exec -f ./flow-aot/aot ...
+hmz exec -f git+https://github.com/humanfia/flow-aot@v0.1.1#aot ...
 ```
 
 ## Usage
@@ -36,7 +35,7 @@ hmz exec -f ./flow-aot/aot ...
 
 ```sh
 hmz exec -f aot -a writer=claude/claude-opus-5:high -a critic=codex/gpt-5.6-sol:high \
-    -b cost=10 "two agents take turns until a reviewer says it is done"
+    -p budget.cost=10 "two agents take turns until a reviewer says it is done"
 ```
 
 When it lands, it prints what the new flow drives, takes and ends on, and the line that runs
@@ -44,12 +43,12 @@ it:
 
 ```text
 compiled: turn_taking_review -- two agents take turns until a reviewer approves
-landed:   .humanize/flows/turn_taking_review
+landed:   .hmz/flows/turn_taking_review
 drives:   worker -- an agent
 drives:   reviewer -- an agent
 ends:     by verdict -- reviewer says done, within 6 rounds
 
-hmz exec -f local/turn_taking_review -a worker=CLI/MODEL:EFFORT -a reviewer=CLI/MODEL:EFFORT -b cost=USD "the task"
+hmz exec -f local/turn_taking_review -a worker=CLI/MODEL:EFFORT -a reviewer=CLI/MODEL:EFFORT -p budget.cost=USD "the task"
 ```
 
 At the prompt, the new flow is `$local/turn_taking_review`.
