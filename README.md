@@ -1,4 +1,4 @@
-# aot _(flow-aot)_
+# aot _(aot-flow)_
 
 AOT for hmz: the flow that writes a flow - a description in, a loaded, smoke-run and reviewed flow out.
 
@@ -24,7 +24,7 @@ You need [hmz](https://github.com/humanfia/humanize). In hmz, open `/flow`, go t
 To run a release without installing it, name it by its git ref:
 
 ```sh
-hmz exec -f git+https://github.com/humanfia/flow-aot@v0.1.1#aot ...
+hmz exec -f git+https://github.com/humanfia/aot-flow@v0.1.1#aot ...
 ```
 
 ## Usage
