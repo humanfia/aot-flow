@@ -47,9 +47,10 @@ def _about(one: type) -> str:
 def briefed() -> str:
     every = set(harnesses())
     lines = [
-        "Every agent, on every harness, can: `spawn(env=...)` a session, `run(prompt, "
-        "session=...)` a turn answering text, or `run(..., output_schema=Model)` answering "
-        "an instance of a pydantic model, `fork(session, env=...)`, `derive(permission=..., "
+        "Every agent, on every harness, can: `spawn()` a session, `run(prompt, "
+        "session=..., env=...)` a turn answering text, working in `env` (None: the "
+        "workspace), or `run(..., output_schema=Model)` answering "
+        "an instance of a pydantic model, `fork(session)`, `derive(permission=..., "
         "skills=...)` a narrower copy, and hang hooks with "
         + ", ".join(f"`{one}`" for one in AGENT_HOOKS)
         + ".",

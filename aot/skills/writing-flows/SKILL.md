@@ -81,14 +81,16 @@ async def pair_loop(
     """An actor works until a fresh reviewer says the task is done."""
     actor, reviewer = agents["actor"], agents["reviewer"]
     workspace = envs["workspace"]
-    working = await actor.spawn(env=workspace)
+    working = await actor.spawn()
     prompt = task
     for round_ in range(params.rounds):
         print(f"round {round_ + 1}/{params.rounds}")
-        await actor.run(prompt, session=working)
-        reading = await reviewer.spawn(env=workspace)
+        await actor.run(prompt, session=working, env=workspace)
+        reading = await reviewer.spawn()
         try:
-            review = await reviewer.run(task, session=reading, output_schema=Review)
+            review = await reviewer.run(
+                task, session=reading, env=workspace, output_schema=Review
+            )
         except OutputSchemaError:
             continue
         if review.done:
@@ -154,13 +156,15 @@ class Workspace(LocalEnv, ShellEnvMixin, FilesEnvMixin):  # `exec([...])`, `read
 
 ## Sessions
 
-- `session = await agent.spawn(env=envs["workspace"])` opens a conversation;
-  `await agent.run(prompt, session=session)` takes one turn and answers its text. A session
+- `session = await agent.spawn()` opens a conversation;
+  `await agent.run(prompt, session=session, env=envs["workspace"])` takes one turn there and
+  answers its text. `env` is where that one turn works, and None is the run's workspace; a
+  session holds only its history, so its turns may each work somewhere else. A session
   held across turns remembers; a fresh one per turn remembers nothing. Choose deliberately
   per role.
 - A reviewer that must arrive fresh gets a new session each round, so it reads the
   repository rather than its own last review.
-- `await agent.fork(session, env=...)` branches a conversation; `agent.derive(...)` is the
+- `await agent.fork(session)` branches a conversation; `agent.derive(...)` is the
   same agent with a narrower permission or fewer skills.
 - Sessions close by themselves when the flow ends.
 

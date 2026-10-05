@@ -215,8 +215,8 @@ async def aot(
         workspace=workspace,
         drafts=drafts,
         params=params,
-        writing=await agents["writer"].spawn(env=drafts),
-        asking=await agents["human"].spawn(env=workspace),
+        writing=await agents["writer"].spawn(),
+        asking=await agents["human"].spawn(),
     )
     return await compiling.compiled(task)
 
@@ -277,7 +277,7 @@ class _Compile:
                 else prompts.REPAIR.format(draft=draft, refused=feedback)
             )
             try:
-                await self.writer.run(asked, session=self.writing)
+                await self.writer.run(asked, session=self.writing, env=self.drafts)
             except HarnessError as error:
                 print(f"hmz: aot: the writer's turn failed: {error}")
             files, running = await self._read(name)
@@ -308,7 +308,7 @@ class _Compile:
     async def _shaped[T: BaseModel](self, prompt: str, schema: type[T]) -> T | None:
         try:
             return await self.writer.run(
-                prompt, session=self.writing, output_schema=schema
+                prompt, session=self.writing, env=self.drafts, output_schema=schema
             )
         except HarnessError:
             return None
@@ -323,7 +323,7 @@ class _Compile:
     async def _asked[T: BaseModel](self, prompt: str, schema: type[T]) -> T:
         try:
             return await self.human.run(
-                prompt, session=self.asking, output_schema=schema
+                prompt, session=self.asking, env=self.workspace, output_schema=schema
             )
         except HarnessError:
             return schema()
@@ -378,11 +378,12 @@ class _Compile:
         blocking = found.blocking(strict=self.params.strict)
         if blocking:
             return "the gates refused it:\n" + gates.said(blocking), found
-        reading = await self.critic.spawn(env=self.drafts)
+        reading = await self.critic.spawn()
         try:
             review = await self.critic.run(
                 prompts.REVIEW.format(spec=spec.model_dump_json(indent=2), draft=name),
                 session=reading,
+                env=self.drafts,
                 output_schema=Review,
             )
         except HarnessError:
