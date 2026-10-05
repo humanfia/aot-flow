@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from hmz.flows import (
     FilesEnvMixin,
+    HarnessNotInstalled,
     Permission,
     PermissionKind,
     ScratchDirEnvMixin,
@@ -487,6 +488,27 @@ async def test_the_critics_veto_is_a_repair_round() -> None:
     assert len(done.writer.asked) == 2
     assert "the round cap needs a ceiling" in done.writer.asked[1]
     assert "pair_loop" in done.critic.asked[0]
+
+
+async def test_a_critic_that_cannot_start_ends_the_compile() -> None:
+    def missing(_prompt: str, **_: Any) -> None:
+        raise HarnessNotInstalled("no critic CLI here")
+
+    local = FakeEnvDriver({}, workdir="/here", run=shell)
+    writer = Writer(local, spec(), [GOOD, GOOD], None)
+    with pytest.raises(HarnessNotInstalled):
+        await run_fake(
+            loaded(),
+            TASK,
+            agents={
+                "writer": FakeAgentDriver(reply=writer),
+                "critic": FakeAgentDriver(reply=missing),
+            },
+            local=local,
+            params={"seconds": 30.0},
+        )
+
+    assert len(writer.asked) == 1
 
 
 async def test_an_ask_nothing_serves_is_refused_before_anything_is_written(

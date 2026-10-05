@@ -27,6 +27,8 @@ from hmz.flows import (
     FlowContext,
     FlowParams,
     HarnessError,
+    HarnessNotInstalled,
+    HarnessSandboxed,
     LocalEnv,
     Outworlder,
     Permission,
@@ -221,6 +223,11 @@ async def aot(
     return await compiling.compiled(task)
 
 
+#: A writer or critic whose CLI cannot be started where it works, which no later turn
+#: of it would be either.
+_CANNOT_START = (HarnessNotInstalled, HarnessSandboxed)
+
+
 class _Compile:
     def __init__(
         self,
@@ -278,6 +285,8 @@ class _Compile:
             )
             try:
                 await self.writer.run(asked, session=self.writing, env=self.drafts)
+            except _CANNOT_START:
+                raise
             except HarnessError as error:
                 print(f"hmz: aot: the writer's turn failed: {error}")
             files, running = await self._read(name)
@@ -310,6 +319,8 @@ class _Compile:
             return await self.writer.run(
                 prompt, session=self.writing, env=self.drafts, output_schema=schema
             )
+        except _CANNOT_START:
+            raise
         except HarnessError:
             return None
 
@@ -386,6 +397,8 @@ class _Compile:
                 env=self.drafts,
                 output_schema=Review,
             )
+        except _CANNOT_START:
+            raise
         except HarnessError:
             return (
                 "the critic's turn failed, so nothing has read the draft fresh -- hold it "
