@@ -25,7 +25,7 @@ You need [hmz](https://github.com/humanfia/humanize). In hmz, open `/flow`, go t
 To run a release without installing it, name it by its git ref:
 
 ```sh
-hmz exec -f git+https://github.com/humanfia/aot-flow@v0.1.1#aot ...
+hmz exec -f git+https://github.com/humanfia/aot-flow@v0.2.0#aot ...
 ```
 
 ## Usage
