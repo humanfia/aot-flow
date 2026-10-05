@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from hmz.flows import (
     FilesEnvMixin,
+    HarnessNotInstalled,
     Permission,
     PermissionKind,
     ScratchDirEnvMixin,
@@ -120,14 +121,16 @@ GOOD = {
         """An actor works until a fresh reviewer says the task is done."""
         actor, reviewer = agents["actor"], agents["reviewer"]
         workspace = envs["workspace"]
-        working = await actor.spawn(env=workspace)
+        working = await actor.spawn()
         prompt = task
         for round_ in range(params.rounds):
             print(f"round {round_ + 1}/{params.rounds}")
-            await actor.run(prompt, session=working)
-            reading = await reviewer.spawn(env=workspace)
+            await actor.run(prompt, session=working, env=workspace)
+            reading = await reviewer.spawn()
             try:
-                review = await reviewer.run(task, session=reading, output_schema=Review)
+                review = await reviewer.run(
+                    task, session=reading, env=workspace, output_schema=Review
+                )
             except OutputSchemaError:
                 continue
             if review.done:
@@ -159,9 +162,9 @@ DEAD = {
     @flow(agents=Agents, envs=Envs, params=FlowParams)
     async def pair_loop(task, *, agents, envs, params, ctx):
         actor = agents["actor"]
-        working = await actor.spawn(env=envs["workspace"])
+        working = await actor.spawn()
         while True:
-            await actor.run(task, session=working)
+            await actor.run(task, session=working, env=envs["workspace"])
     ''',
 }
 
@@ -228,8 +231,8 @@ READER = {
         "class Workspace(LocalEnv, FilesEnvMixin): ...\n\n\n    class Envs(",
     )
     .replace(
-        "await actor.run(prompt, session=working)",
-        "await actor.run(prompt, session=working)\n            await workspace.read('plan.md')",
+        "await actor.run(prompt, session=working, env=workspace)",
+        "await actor.run(prompt, session=working, env=workspace)\n            await workspace.read('plan.md')",
     )
 }
 
@@ -485,6 +488,27 @@ async def test_the_critics_veto_is_a_repair_round() -> None:
     assert len(done.writer.asked) == 2
     assert "the round cap needs a ceiling" in done.writer.asked[1]
     assert "pair_loop" in done.critic.asked[0]
+
+
+async def test_a_critic_that_cannot_start_ends_the_compile() -> None:
+    def missing(_prompt: str, **_: Any) -> None:
+        raise HarnessNotInstalled("no critic CLI here")
+
+    local = FakeEnvDriver({}, workdir="/here", run=shell)
+    writer = Writer(local, spec(), [GOOD, GOOD], None)
+    with pytest.raises(HarnessNotInstalled):
+        await run_fake(
+            loaded(),
+            TASK,
+            agents={
+                "writer": FakeAgentDriver(reply=writer),
+                "critic": FakeAgentDriver(reply=missing),
+            },
+            local=local,
+            params={"seconds": 30.0},
+        )
+
+    assert len(writer.asked) == 1
 
 
 async def test_an_ask_nothing_serves_is_refused_before_anything_is_written(
