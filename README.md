@@ -13,6 +13,7 @@ all three lands among this project's own flows, the `local` flowverse.
   - [How a draft is checked](#how-a-draft-is-checked)
   - [Roles and params](#roles-and-params)
   - [What ends it](#what-ends-it)
+- [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -97,6 +98,10 @@ Both agents carry the flow's own [skill](https://docs.humanfia.ai/humanize/user/
 `aot` keeps nothing for `--resume`: each run is one description, and running it again writes
 another flow. To write a flow by hand instead, see
 [Writing a flow](https://docs.humanfia.ai/humanize/weaver/writing-a-flow).
+
+## Maintainers
+
+[@futrime](https://github.com/futrime), as listed in [`.github/CODEOWNERS`](.github/CODEOWNERS).
 
 ## Contributing
 
