@@ -75,7 +75,7 @@ A refusal at any step goes back to the writer word for word, for up to `repairs`
 | `critic` | Reads each draft that passed the gates, in a fresh session. It may only read. |
 | `human` | You, filled in by hmz. Asked about names, capabilities, and a draft whose repairs ran out. |
 
-Both agents carry the flow's own [skill](https://docs.humanfia.ai/humanize/user/skills),
+Both agents carry the flow's own [skill](https://humanfia.ai/humanize/user/skills),
 `writing-flows`: how a flow is written against hmz. Any backend can fill either role.
 
 | Param | Default | |
@@ -93,11 +93,11 @@ Both agents carry the flow's own [skill](https://docs.humanfia.ai/humanize/user/
 - **Nothing lands.** No spec could be drawn, you declined a name or a capability, or the
   repairs ran out and you did not take the draft as it stands. Under `hmz exec` nobody is there
   to say yes, so every such question is a no.
-- **The [budget](https://docs.humanfia.ai/humanize/features/allowances).**
+- **The [budget](https://humanfia.ai/humanize/features/allowances).**
 
 `aot` keeps nothing for `--resume`: each run is one description, and running it again writes
 another flow. To write a flow by hand instead, see
-[Writing a flow](https://docs.humanfia.ai/humanize/weaver/writing-a-flow).
+[Writing a flow](https://humanfia.ai/humanize/weaver/writing-a-flow).
 
 ## Maintainers
 
